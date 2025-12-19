@@ -19,7 +19,7 @@ def q3_data_generator():
     """
     data_file_path_prefix = "./1GB/"   # TPC-H 数据文件路径
     output_file_path = os.path.join(data_file_path_prefix, "q3_output_1GB.csv")  # 输出文件路径
-    window_size = 6001215  # 窗口大小，控制删除操作的延迟
+    window_size = 100000  # 窗口大小，控制删除操作的延迟
 
     # 文件路径
     customer_file = os.path.join(data_file_path_prefix, "customer.tbl")
@@ -73,7 +73,7 @@ def q3_data_generator():
         line_lineitem = reset_line_format(line_lineitem)
 
         # 插入 orders
-        if count % 6 == 0 and line_orders: # 控制 orders 插入频率
+        if count % 4 == 0 and line_orders: # 控制 orders 插入频率
             orders_count += 1
             output.write("+OR" + line_orders)
             line_orders = orders.readline()
@@ -93,14 +93,14 @@ def q3_data_generator():
             line_lineitem_d = reset_line_format(line_lineitem_d)
 
             # 删除 orders
-            if delete_count % 12 == 0 and line_orders_d:
+            if delete_count % 4 == 0 and line_orders_d:
                 orders_delete_count += 1
                 output.write("-OR" + line_orders_d)
                 line_orders_d = orders_d.readline()
                 line_orders_d = reset_line_format(line_orders_d)
 
             # 删除 customer
-            if delete_count % 80 == 0 and line_customer_d:
+            if delete_count % 40 == 0 and line_customer_d:
                 customer_delete_count += 1
                 output.write("-CU" + line_customer_d)
                 line_customer_d = customer_d.readline()

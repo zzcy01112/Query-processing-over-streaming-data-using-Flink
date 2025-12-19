@@ -40,7 +40,7 @@ class OrdersProcess(CoProcessFunction):
         :return: None
         """
         order = value.payload
-        logger.debug(f"处理 Orders 更新事件: operator={value.operator}, o_orderkey={order.o_orderkey}, o_custkey={order.o_custkey}, o_orderdate={order.o_orderdate}")
+        # logger.debug(f"处理 Orders 更新事件: operator={value.operator}, o_orderkey={order.o_orderkey}, o_custkey={order.o_custkey}, o_orderdate={order.o_orderdate}")
         is_deleted = False
         # 判断插入/删除操作
         if value.operator == Operator.INSERT:
@@ -60,12 +60,12 @@ class OrdersProcess(CoProcessFunction):
         # 仅当存活状态变化时，发送通知
         if order_alive != pre_order_alive:
             self.order_alive.put(order.o_orderkey, order_alive)
-            logger.debug(f"Orders 存活状态变化: o_orderkey={order.o_orderkey}, order_alive={order_alive}")
+            # logger.debug(f"Orders 存活状态变化: o_orderkey={order.o_orderkey}, order_alive={order_alive}")
             yield order.o_orderkey, order_alive, order
 
     def process_element2(self, value: tuple[int, bool], ctx: 'CoProcessFunction.Context'):
         c_custkey, customer_alive = value
-        logger.debug(f"处理 Customer 存活状态通知: c_custkey={c_custkey}, customer_alive={customer_alive}")
+        # logger.debug(f"处理 Customer 存活状态通知: c_custkey={c_custkey}, customer_alive={customer_alive}")
         # 更新 o_custkey 对应的 Customer 存活状态
         self.cust_alive.update(customer_alive)
         # 更新所有该 Customer 关联的 Orders 的存活状态
@@ -76,5 +76,5 @@ class OrdersProcess(CoProcessFunction):
             # 当存活状态变化时，发送通知
             if order_alive != pre_order_alive:
                 self.order_alive.put(o_orderkey, order_alive)
-                logger.debug(f"Orders 存活状态变化: o_orderkey={o_orderkey}, order_alive={order_alive}")
+                # logger.debug(f"Orders 存活状态变化: o_orderkey={o_orderkey}, order_alive={order_alive}")
                 yield o_orderkey, order_alive, order

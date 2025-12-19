@@ -30,11 +30,11 @@ class CustomerProcess(KeyedProcessFunction):
         :return: None
         """
         c_mktsegment = value.payload.c_mktsegment
-        logger.debug(f"处理 Customer 更新事件: operator={value.operator}, c_custkey={value.payload.c_custkey}, c_mktsegment={c_mktsegment}")
+        # logger.debug(f"处理 Customer 更新事件: operator={value.operator}, c_custkey={value.payload.c_custkey}, c_mktsegment={c_mktsegment}")
         # 插入操作
         if value.operator == Operator.INSERT and c_mktsegment == 'BUILDING':
             self.alive.update(True)
-            logger.debug(f"Customer {value.payload.c_custkey} 满足筛选条件，标记为存活.")
+            # logger.debug(f"Customer {value.payload.c_custkey} 满足筛选条件，标记为存活.")
             # 发送存活通知 (c_custkey, customer_alive)
             yield value.payload.c_custkey, True
         # 删除操作
